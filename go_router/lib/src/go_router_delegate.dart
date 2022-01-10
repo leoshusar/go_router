@@ -651,7 +651,7 @@ class GoRouterDelegate extends RouterDelegate<Uri>
 
     // wrap the returned Navigator to enable GoRouter.of(context).go()
     final uri = Uri.parse(location);
-    return builderWithNav(
+    var result = builderWithNav(
       context,
       GoRouterState(
         this,
@@ -676,6 +676,14 @@ class GoRouterDelegate extends RouterDelegate<Uri>
         },
       ),
     );
+
+    final navBuilders = getNavBuilders(context, matches.toList());
+
+    for (final navBuilder in navBuilders) {
+      result = navBuilder.key(context, navBuilder.value, result);
+    }
+
+    return result;
   }
 
   /// Get the stack of sub-routes that matches the location and turn it into a
@@ -725,9 +733,40 @@ class GoRouterDelegate extends RouterDelegate<Uri>
         pageKey: match.pageKey, // push() remaps the page key for uniqueness
       );
 
-      yield match.route.pageBuilder != null
-          ? match.route.pageBuilder!(context, state)
-          : _pageBuilder(context, state, match.route.builder);
+      if (match.route.pageBuilder != null) {
+        yield match.route.pageBuilder!(context, state);
+      } else if (match.route.builder != null) {
+        yield _pageBuilder(context, state, match.route.builder!);
+      }
+    }
+  }
+
+  Iterable<MapEntry<GoRouterNavigatorBuilder, GoRouterState>> getNavBuilders(
+    BuildContext context,
+    List<GoRouteMatch> matches,
+  ) sync* {
+    assert(matches.isNotEmpty);
+
+    var params = <String, String>{};
+    for (final match in matches.reversed) {
+      params = {...params, ...match.decodedParams};
+
+      final state = GoRouterState(
+        this,
+        location: location,
+        subloc: match.subloc,
+        name: match.route.name,
+        path: match.route.path,
+        fullpath: match.fullpath,
+        params: params,
+        queryParams: match.queryParams,
+        extra: match.extra,
+        pageKey: match.pageKey, // push() remaps the page key for uniqueness
+      );
+
+      if (match.route.navigatorBuilder != null) {
+        yield MapEntry(match.route.navigatorBuilder!, state);
+      }
     }
   }
 

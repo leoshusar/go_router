@@ -14,7 +14,8 @@ class GoRoute {
     required this.path,
     this.name,
     this.pageBuilder,
-    this.builder = _builder,
+    this.builder,
+    this.navigatorBuilder,
     this.routes = const [],
     this.redirect = _redirect,
   }) {
@@ -112,7 +113,9 @@ class GoRoute {
   /// ),
   /// ```
   ///
-  final GoRouterWidgetBuilder builder;
+  final GoRouterWidgetBuilder? builder;
+
+  final GoRouterNavigatorBuilder? navigatorBuilder;
 
   /// A list of sub go routes for this route.
   ///

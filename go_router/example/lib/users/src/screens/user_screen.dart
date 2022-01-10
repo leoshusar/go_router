@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 import '../blocs/user_bloc.dart';
@@ -29,6 +30,17 @@ class _UserScreenState extends State<UserScreen>
       title: Text(_user == null ? 'Error' : _user!.name),
       bottom: TabBar(
         controller: _tabController,
+        onTap: (index) {
+          switch (index) {
+            case 1:
+              context.go('/users/${_user!.id}/info');
+              break;
+            case 0:
+            default:
+              context.go('/users/${_user!.id}/roles');
+              break;
+          }
+        },
         tabs: const [
           Tab(text: 'Roles'),
           Tab(text: 'Info'),

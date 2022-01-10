@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
@@ -32,7 +33,10 @@ class AppRouter {
             routes: [
               GoRoute(
                 path: 'roles',
-                builder: (context, state) => const UserScreen(tab: 'roles'),
+                pageBuilder: (context, state) => const MaterialPage<void>(
+                  key: ValueKey('/users/:userId'),
+                  child: UserScreen(tab: 'roles'),
+                ),
                 routes: [
                   GoRoute(
                     path: ':roleId',
@@ -49,7 +53,10 @@ class AppRouter {
               ),
               GoRoute(
                 path: 'info',
-                builder: (context, state) => const UserScreen(tab: 'info'),
+                pageBuilder: (context, state) => const MaterialPage<void>(
+                  key: ValueKey('/users/:userId'),
+                  child: UserScreen(tab: 'info'),
+                ),
               ),
             ],
           ),
